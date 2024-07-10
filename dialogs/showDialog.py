@@ -1,3 +1,5 @@
+import os
+
 from PyQt5.Qt import Qt
 from PyQt5.QtGui import QImage, QPixmap
 from PyQt5.QtWidgets import QDialog
@@ -61,45 +63,46 @@ class ShowDialog(QDialog):
         """
         绘制表格
         """
-        plt.figure(figsize=(10, 4))  # 宽度为10英寸，高度为5英寸
-        if path == 'data/today.png':
-            x = range(len(share_data.today_data["v"]))
-            width = 0.35  # 条形图的宽度
-            plt.bar(x, share_data.today_data["v"], width, label="vehicle")
-            plt.bar([p + width for p in x], share_data.today_data["people"], width, label="people")
+        if not os.path.exists(path) or not os.path.isfile(path):
+            plt.figure(figsize=(10, 4))  # 宽度为10英寸，高度为5英寸
+            if path == 'data/today.png':
+                x = range(len(share_data.today_data["v"]))
+                width = 0.35  # 条形图的宽度
+                plt.bar(x, share_data.today_data["v"], width, label="vehicle")
+                plt.bar([p + width for p in x], share_data.today_data["people"], width, label="people")
+            else:
+                x = range(len(share_data.week_data["v"]))
+                width = 0.35  # 条形图的宽度
+                plt.bar(x, share_data.week_data["v"], width, label="vehicle")
+                plt.bar([p + width for p in x], share_data.week_data["people"], width, label="people")
+
+                # 添加图例
+            plt.legend()
+
+            # 添加标题和轴标签
+            plt.xlabel("Day")
+            plt.ylabel("Value")
+            plt.xticks(x, [f"Day {i + 1}" for i in x])  # 如果需要的话，可以添加具体的日期标签
+
+            # 保存图形
+            plt.savefig(path)
+            plt.close()  # 关闭绘图窗口（如果有的话）
         else:
-            x = range(len(share_data.week_data["v"]))
-            width = 0.35  # 条形图的宽度
-            plt.bar(x, share_data.week_data["v"], width, label="vehicle")
-            plt.bar([p + width for p in x], share_data.week_data["people"], width, label="people")
-
-            # 添加图例
-        plt.legend()
-
-        # 添加标题和轴标签
-        plt.xlabel("Day")
-        plt.ylabel("Value")
-        plt.xticks(x, [f"Day {i + 1}" for i in x])  # 如果需要的话，可以添加具体的日期标签
-
-        # 保存图形
-        plt.savefig(path)
-        plt.close()  # 关闭绘图窗口（如果有的话）
-
-        image = cv.imread(path)
-        h, w, c = image.shape
-        b = image.tobytes()
-        image = QImage(b, w, h, w * c, QImage.Format_BGR888)
-        pix = QPixmap.fromImage(image)
-        if path == 'data/today.png':
-            width = self.ui.label_2.width()
-            height = self.ui.label_2.height()
-            scale_pix = pix.scaled(width, height, Qt.KeepAspectRatio)
-            self.ui.label_2.setPixmap(scale_pix)
-        else:
-            width = self.ui.label_2_1.width()
-            height = self.ui.label_2_1.height()
-            scale_pix = pix.scaled(width, height, Qt.KeepAspectRatio)
-            self.ui.label_2_1.setPixmap(scale_pix)
+            image = cv.imread(path)
+            h, w, c = image.shape
+            b = image.tobytes()
+            image = QImage(b, w, h, w * c, QImage.Format_BGR888)
+            pix = QPixmap.fromImage(image)
+            if path == 'data/today.png':
+                width = self.ui.label_2.width()
+                height = self.ui.label_2.height()
+                scale_pix = pix.scaled(width, height, Qt.KeepAspectRatio)
+                self.ui.label_2.setPixmap(scale_pix)
+            else:
+                width = self.ui.label_2_1.width()
+                height = self.ui.label_2_1.height()
+                scale_pix = pix.scaled(width, height, Qt.KeepAspectRatio)
+                self.ui.label_2_1.setPixmap(scale_pix)
 
     def show_data(self):
         """

@@ -21,6 +21,7 @@ def get_image(img_path):
         print("error:{}".format(e))
         return None
 
+
 def people_find(img):
     """
     人流量统计
@@ -42,6 +43,8 @@ def people_find(img):
         return rep['person_num']
     else:
         return None
+
+
 def vehicle_detection(img):
     """
     车辆识别
@@ -55,11 +58,13 @@ def vehicle_detection(img):
     headers = {'content-type': 'application/x-www-form-urlencoded'}
 
     response = requests.request("POST", url, headers=headers, data=payload)
-    # print(response)
+    print(response)
     if response:
         rep = response.json()
         num = rep['vehicle_num']
-    return img, num, rep['vehicle_info']
+        return img, num, rep['vehicle_info']
+    else:
+        return None
 
 
 def draw_rect(info, img):
@@ -73,7 +78,6 @@ def draw_rect(info, img):
         y1 = location['top']
         x2 = x1 + location['width']
         y2 = y1 + location['height']
-        print((x1, y1), (x2, y2))
         cv.rectangle(img, (x1, y1), (x2, y2), (0, 0, 255), 2)
         # 定义要绘制的文字
         text = vehicle['type']
@@ -88,6 +92,7 @@ def draw_rect(info, img):
         img = cv.putText(img, text, position, font, font_scale, color, thickness, cv.LINE_AA)
 
     return img
+
 
 class Video(QThread):
     """
@@ -114,10 +119,11 @@ class Video(QThread):
         """
         运行线程
         """
-        a = 0
-        if self.i==-1:
+        if self.i == -1:
+            a = 0
             ret, frame = self.dev.read()
             frame, num, inf = vehicle_detection(frame)
+
             body_num = people_find(frame)
 
             # 耗时操作
@@ -140,13 +146,14 @@ class Video(QThread):
                     break
                 h, w, c = frame.shape
                 img_bytes = frame.tobytes()
-                self.send.emit(h, w, c, img_bytes, self.i, num["motorbike"] + num["tricycle"], num["car"] + num["bus"] + num["truck"], body_num)
+                self.send.emit(h, w, c, img_bytes, self.i, num["motorbike"] + num["tricycle"],
+                               num["car"] + num["bus"] + num["truck"], body_num)
                 QThread.usleep(30000)
         else:
             a = 0
             while not self.isInterruptionRequested():
                 ret, frame = self.dev.read()
-                a = a+1
+                a = a + 1
                 if a == 200:
                     self.stop()
                 if not ret:
@@ -155,4 +162,3 @@ class Video(QThread):
                 img_bytes = frame.tobytes()
                 self.send.emit(h, w, c, img_bytes, self.i, 0, 0, 0)
                 QThread.usleep(30000)
-

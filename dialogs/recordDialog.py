@@ -10,7 +10,6 @@ from pages.recordPage import Record_Ui_Dialog
 class RecordDialog(QDialog):
     def __init__(self):
         super().__init__()
-        print(('1234567890'))
         self.ui = Record_Ui_Dialog()
         self.video_path = ['data/video1.mp4', 'data/video2.mp4', 'data/video3.mp4']
         self.ui.setupUi(self,3)
