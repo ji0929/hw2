@@ -1,0 +1,17 @@
+[  
+    {  
+        "monitor_id": 1,  
+        "monitor_data": "2024/1/1",
+        "monitor_path": "/data/video1"
+    },  
+    {  
+        "monitor_id": 2,
+        "monitor_data": "2024/1/2",
+        "monitor_path": "/data/video2"
+    },  
+    {  
+        "monitor_id": 3,
+        "monitor_data": "2002/1/3",
+        "monitor_path": "/data/video3"
+    }  
+]
